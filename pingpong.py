@@ -410,19 +410,3 @@ def update_vs_stats(player1, player2):
                              'OT win percentage against ' + player2['name']: vs_ot_pct,
                              'longest win streak against ' + player2['name']: vs_win_streak,
                              'longest losing streak against ' + player2['name']: vs_loss_streak}, data, upsert=True)
-
-
-# update_g_stats()
-# view_g_stats('Andrew')
-# add_data_obo()
-# update_g_stats()
-# update_pl_stats()
-# print stuff
-# for player in playerNames.find():
-#     print(player)
-# #
-# for game in games.find().sort('game_id'):
-#     print(game)
-# #
-# print(games.count())
-# print(players.count())
