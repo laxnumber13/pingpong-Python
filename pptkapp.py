@@ -189,7 +189,7 @@ class AllGamesPage(tk.Frame):
         self.table.heading('#4', text='Losing Score')  # , command=lambda: sorted(self.table, 4, reverse=True))
         self.table.heading('#5', text='Date Added')  # , command=lambda: sorted(self.table, 5, reverse=True))
 
-        button1 = ttk.Button(self, text='Show Stats', command=lambda: self.view_games())
+        button1 = ttk.Button(self, text='Show Games', command=lambda: self.view_games())
         button1.pack()
 
         button2 = ttk.Button(self, text='Return to Start', command=lambda: [controller.show_frame(StartPage),
