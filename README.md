@@ -1,6 +1,6 @@
 # pingpong-Tkinter
 
-a little app written with python3.4/tkinter to manage pingpong scores and stats using a mongodb database
+a little app written with python3.4/tkinter to manage pingpong scores and stats using a MongoDB database
 
 pptkapp.py is the main script to run
 
