@@ -2,9 +2,9 @@ from pymongo import MongoClient
 import datetime
 
 
-""" read in a file containing ping pong scores from one or more games.
-    store all games and create a database of all scores and the outcome
-    of all games for every player. """
+""" this module contains methods for connecting to a mongodb database server, adding individual games
+    to the database, adding a group of games from a file, updating overall stats, updating
+    individual player stats, and updating player vs player stats."""
 
 
 client = MongoClient('mongodb://laxnumber13:trackstat@ds064748.mlab.com:64748/pingpongstats')

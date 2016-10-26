@@ -5,6 +5,11 @@ from tkinter import *
 from tkinter import ttk
 
 
+""" this app allows the user to connect to a mongodb database containing pingpong games and stats.
+    once logged in, user can view a list of all games in the db, add games to the db, or check
+    the overall stats, individual player stats, and player vs player stats."""
+
+
 player_names = []
 for player in pingpong.playerNames.find():
     player_names.append(player['name'])
@@ -21,7 +26,7 @@ class PingPongApp(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        for F in (LoginPage, ReLoginPage, StartPage, EnterPage, GameStatsPage, PlayerStatsPage,
+        for F in (LoginPage, ReLoginPage, StartPage, AllGamesPage, EnterPage, GameStatsPage, PlayerStatsPage,
                   VersusStatsPage, GamesAddedPage, GameAddedPage, FailedLoginPage, FailedReLoginPage,
                   FileErrorPage, ErrorPage):
             frame = F(container, self)
@@ -92,7 +97,7 @@ class ReLoginPage(tk.Frame):
         label3 = tk.Label(self, text='Password')
         label3.pack()
         self.pword = StringVar()
-        self.box2 = ttk.Entry(self, textvariable=self.pword)
+        self.box2 = ttk.Entry(self, textvariable=self.pword, show='*')
         self.box2.pack()
         label4 = tk.Label(self, text='Database Name')
         label4.pack()
@@ -129,6 +134,9 @@ class StartPage(tk.Frame):
         label = tk.Label(self, text='Start Page')  # font=LARGE_FONT)
         label.pack(pady=10, padx=10)
 
+        button = ttk.Button(self, text='View All Games', command=lambda: controller.show_frame(AllGamesPage))
+        button.pack()
+
         button1 = ttk.Button(self, text='Enter Individual Games', command=lambda: controller.show_frame(EnterPage))
         button1.pack()
 
@@ -162,6 +170,45 @@ class StartPage(tk.Frame):
                 self.controller.show_frame(GamesAddedPage)
             except:
                 self.controller.show_frame(FileErrorPage)
+
+
+class AllGamesPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text='All Games List')
+        label.pack(pady=10, padx=10)
+        self.table = ttk.Treeview(self, columns=('Game ID', 'Winner', 'Winning Score',
+                                                 'Loser', 'Losing Score', 'Date Added'))
+
+        self.table.heading('#0', text='Game ID')  # , command=lambda: sorted(self.table, 0, reverse=True))
+        self.table.heading('#1', text='Winner')  # , command=lambda: sorted(self.table, 1, reverse=True))
+        self.table.heading('#2', text='Winning Score')  # , command=lambda: sorted(self.table, 2, reverse=True))
+        self.table.heading('#3', text='Loser')  # , command=lambda: sorted(self.table, 3, reverse=True))
+        self.table.heading('#4', text='Losing Score')  # , command=lambda: sorted(self.table, 4, reverse=True))
+        self.table.heading('#5', text='Date Added')  # , command=lambda: sorted(self.table, 5, reverse=True))
+
+        button1 = ttk.Button(self, text='Show Stats', command=lambda: self.view_games())
+        button1.pack()
+
+        button2 = ttk.Button(self, text='Return to Start', command=lambda: [controller.show_frame(StartPage),
+                                                                            self.clear()])
+        button2.pack()
+
+    def clear(self):
+        self.table.delete(*self.table.get_children())
+
+    def view_games(self):
+        for game in pingpong.games.find():
+            try:
+                self.table.insert('', 'end', game['game_id'], text=game['game_id'],
+                                  values=(game['winner'], game['winningScore'], game['loser'], game['losingScore'], game['dateAdded']))
+            except:
+                self.table.item(game['game_id'], text=game['game_id'],
+                                values=(game['winner'], game['winningScore'], game['loser'], game['losingScore'], game['dateAdded']))
+
+        self.table.pack()
 
 
 class EnterPage(tk.Frame):
@@ -343,30 +390,30 @@ class PlayerStatsPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         label = tk.Label(self, text='Select Player to Get Stats for\nThen Click "Show Stats"')
-        label.grid(row=1, pady=10, padx=10)
+        label.pack(pady=10, padx=10)
         label2 = tk.Label(self, text='Note: if new players have been added this\n'
                                      'session, click "Update Player Names" to\n'
                                      'update the dropdown menus.')
 
-        label2.grid(row=2)
+        label2.pack()
         self.table = ttk.Treeview(self, columns='Value')
         self.table.heading('#0', text='Stat')
         self.table.heading('#1', text='Value')
 
         button = ttk.Button(self, text='Update Player Names', command=lambda: [self.clear(), self.update_names()])
-        button.grid(row=3)
+        button.pack()
 
         self.player = StringVar()
         self.player.set('Select a Player')
         self.dd = OptionMenu(self, self.player, *player_names)
-        self.dd.grid(row=4)
+        self.dd.pack()
 
         button1 = ttk.Button(self, text='Show Stats', command=lambda: self.view_pl_stats())
-        button1.grid(row=5)
+        button1.pack()
 
         button2 = ttk.Button(self, text='Return to Start', command=lambda: [controller.show_frame(StartPage),
                                                                             self.clear()])
-        button2.grid(row=6)
+        button2.pack()
 
     def update_names(self):
         self.dd.destroy()
@@ -374,7 +421,7 @@ class PlayerStatsPage(tk.Frame):
         for p in pingpong.playerNames.find():
             new_players.append(p['name'])
         self.dd = OptionMenu(self, self.player, *new_players)
-        self.dd.grid(row=4)
+        self.dd.pack()
 
     def clear(self):
         self.player.set('Select a Player')
@@ -391,7 +438,7 @@ class PlayerStatsPage(tk.Frame):
                         self.table.insert('', 'end', key, text=key, values=str(document[key]))
                     except:
                         self.table.item(key, text=key, values=str(document[key]))
-        self.table.grid(row=7)
+        self.table.pack()
 
 
 class VersusStatsPage(tk.Frame):
@@ -400,33 +447,33 @@ class VersusStatsPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         label = tk.Label(self, text='Select Two Players\nThen Click "Show Versus Stats"')
-        label.grid(row=1, pady=10, padx=10)
+        label.pack(pady=10, padx=10)
         label2 = tk.Label(self, text='Note: if new players have been added this\n'
                                      'session, click "Update Player Names" to\n'
                                      'update the dropdown menus.')
-        label2.grid(row=2)
+        label2.pack()
         self.table = ttk.Treeview(self, columns='Value')
         self.table.heading('#0', text='Stat')
         self.table.heading('#1', text='Value')
 
         button = ttk.Button(self, text='Update Player Names', command=lambda: [self.clear(), self.update_names()])
-        button.grid(row=3)
+        button.pack()
 
         self.player1 = StringVar()
         self.player1.set('Select Player 1')
         self.dd1 = OptionMenu(self, self.player1, *player_names)
-        self.dd1.grid(row=4)
+        self.dd1.pack()
         self.player2 = StringVar()
         self.player2.set('Select Player 2')
         self.dd2 = OptionMenu(self, self.player2, *player_names)
-        self.dd2.grid(row=5)
+        self.dd2.pack()
 
         button1 = ttk.Button(self, text='Show Versus Stats', command=lambda: self.view_vs_stats())
-        button1.grid(row=6)
+        button1.pack()
 
         button2 = ttk.Button(self, text='Return to Start', command=lambda: [controller.show_frame(StartPage),
                                                                             self.clear()])
-        button2.grid(row=7)
+        button2.pack()
 
     def update_names(self):
         self.dd1.destroy()
@@ -436,8 +483,8 @@ class VersusStatsPage(tk.Frame):
             new_players.append(p['name'])
         self.dd1 = OptionMenu(self, self.player1, *new_players)
         self.dd2 = OptionMenu(self, self.player2, *new_players)
-        self.dd1.grid(row=4)
-        self.dd2.grid(row=5)
+        self.dd1.pack()
+        self.dd2.pack()
 
     def clear(self):
         self.player1.set('Select Player 1')
@@ -459,7 +506,7 @@ class VersusStatsPage(tk.Frame):
                             self.table.item(key, text=key, values=str(document[key]))
             else:
                 pass
-        self.table.grid(row=8)
+        self.table.pack()
 
 
 app = PingPongApp()
