@@ -1,4 +1,4 @@
-# pingpong-Tkinter
+# pingpong-Python
 
 a little app written with python3.4/tkinter to manage pingpong scores and stats using a MongoDB database
 
