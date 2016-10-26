@@ -4,6 +4,7 @@ a little app written with python3.4/tkinter to manage pingpong scores and stats 
 
 requires Python to run the scripts
 
-pptkapp.py is the main script to run
+download all 3 files to run properly
 
-requires the other 2 files to function properly
+Usage:
+run pptkapp.py
