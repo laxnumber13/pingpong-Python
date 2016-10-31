@@ -1,6 +1,6 @@
 # pingpong-Python
 
-a little app written with python3.4/tkinter to manage pingpong scores and stats using a MongoDB database
+a little app written with python3.4 using the tkinter module, to manage ping pong scores and stats using a MongoDB database
 
 requires Python to run the scripts
 
