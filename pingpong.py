@@ -7,7 +7,7 @@ import datetime
     individual player stats, and updating player vs player stats."""
 
 
-client = MongoClient('mongodb://laxnumber13:trackstat@ds064748.mlab.com:64748/pingpongstats')
+client = MongoClient('mongodb://user:readonly@ds064748.mlab.com:64748/pingpongstats')
 db = client.pingpongstats
 games = db.games
 playerNames = db.playerNames
@@ -18,7 +18,7 @@ vs_stats = db.vs_stats
 
 def reconnect(uname, pword, dbname):
     global client, db, games, playerNames, g_stats, pl_stats, vs_stats
-    client2 = MongoClient('mongodb://' + uname + ':' + pword + '@ds064748.mlab.com:64748/' + dbname)
+    client2 = MongoClient('mongodb://%s:%s@ds064748.mlab.com:64748/%s' % (uname, pword, dbname))
     if client2.server_info():
         client = client2
         db = client.pingpongstats
@@ -141,8 +141,8 @@ def update_g_stats():
             'games to OT': ot_games,
             'highest score': (high_scorer, high_score),
             'lowest score': (low_scorer, low_score),
-            'highest win percentage': (hi_win_pcter, hi_win_pct),
-            'lowest win percentage': (low_win_pcter, low_win_pct),
+            'highest win percentage (>4 games played)': (hi_win_pcter, hi_win_pct),
+            'lowest win percentage (>4 games played)': (low_win_pcter, low_win_pct),
             'longest win streak': (win_streaker, win_streak),
             'longest losing streak': (lose_streaker, lose_streak)}
 
@@ -150,8 +150,8 @@ def update_g_stats():
                     'games to OT': ot_games,
                     'highest score': (high_scorer, high_score),
                     'lowest score': (low_scorer, low_score),
-                    'highest win percentage': (hi_win_pcter, hi_win_pct),
-                    'lowest win percentage': (low_win_pcter, low_win_pct),
+                    'highest win percentage (>4 games played)': (hi_win_pcter, hi_win_pct),
+                    'lowest win percentage (>4 games played)': (low_win_pcter, low_win_pct),
                     'longest win streak': (win_streaker, win_streak),
                     'longest losing streak': (lose_streaker, lose_streak)}, data, upsert=True)
 
