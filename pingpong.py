@@ -86,74 +86,74 @@ def update_g_stats():
     high_score = 0
     high_scorer = ''
     for player in pl_stats.find():
-        if player['highest score'] == high_score:
+        if player['Highest Score'] == high_score:
             high_scorer = high_scorer + ', ' + player['name']
-        if player['highest score'] > high_score:
-            high_score = player['highest score']
+        if player['Highest Score'] > high_score:
+            high_score = player['Highest Score']
             high_scorer = player['name']
     # lowest score
     low_score = 99
     low_scorer = ''
     for player in pl_stats.find():
-        if player['lowest score'] == low_score:
+        if player['Lowest Score'] == low_score:
             low_scorer = low_scorer + ', ' + player['name']
-        if player['lowest score'] < low_score:
-            low_score = player['lowest score']
+        if player['Lowest Score'] < low_score:
+            low_score = player['Lowest Score']
             low_scorer = player['name']
     # highest win percentage
     hi_win_pct = 0
     hi_win_pcter = ''
-    for player in pl_stats.find({'total games': {'$gt': 4}}):
-        if player['overall win percentage'] == hi_win_pct:
+    for player in pl_stats.find({'Total Games': {'$gt': 4}}):
+        if player['Overall Win %'] == hi_win_pct:
             hi_win_pcter = hi_win_pcter + ', ' + player['name']
-        if player['overall win percentage'] > hi_win_pct:
-            hi_win_pct = player['overall win percentage']
+        if player['Overall Win %'] > hi_win_pct:
+            hi_win_pct = player['Overall Win %']
             hi_win_pcter = player['name']
     # lowest win percentage
     low_win_pct = 1
     low_win_pcter = ''
-    for player in pl_stats.find({'total games': {'$gt': 4}}):
-        if player['overall win percentage'] == low_win_pct:
+    for player in pl_stats.find({'Total Games': {'$gt': 4}}):
+        if player['Overall Win %'] == low_win_pct:
             low_win_pcter = low_win_pcter + ', ' + player['name']
-        if player['overall win percentage'] < low_win_pct:
-            low_win_pct = player['overall win percentage']
+        if player['Overall Win %'] < low_win_pct:
+            low_win_pct = player['Overall Win %']
             low_win_pcter = player['name']
     # longest win streak
     win_streak = 0
     win_streaker = ''
     for player in pl_stats.find():
-        if player['longest win streak'] == win_streak:
+        if player['Longest Win Streak'] == win_streak:
             win_streaker = win_streaker + ', ' + player['name']
-        if player['longest win streak'] > win_streak:
-            win_streak = player['longest win streak']
+        if player['Longest Win Streak'] > win_streak:
+            win_streak = player['Longest Win Streak']
             win_streaker = player['name']
     # longest losing streak
     lose_streak = 0
     lose_streaker = ''
     for player in pl_stats.find():
-        if player['longest losing streak'] == lose_streak:
+        if player['Longest Losing Streak'] == lose_streak:
             lose_streaker = lose_streaker + ', ' + player['name']
-        if player['longest losing streak'] > lose_streak:
-            lose_streak = player['longest losing streak']
+        if player['Longest Losing Streak'] > lose_streak:
+            lose_streak = player['Longest Losing Streak']
             lose_streaker = player['name']
 
-    data = {'total games': tot_games,
-            'games to OT': ot_games,
-            'highest score': (high_scorer, high_score),
-            'lowest score': (low_scorer, low_score),
-            'highest win percentage (>4 games played)': (hi_win_pcter, hi_win_pct),
-            'lowest win percentage (>4 games played)': (low_win_pcter, low_win_pct),
-            'longest win streak': (win_streaker, win_streak),
-            'longest losing streak': (lose_streaker, lose_streak)}
+    data = {'Total Games': tot_games,
+            'Games to OT': ot_games,
+            'Highest Score': (high_score, high_scorer),
+            'Lowest Score': (low_score, low_scorer),
+            'Highest Win % (>4 games)': (hi_win_pct, hi_win_pcter),
+            'Lowest Win % (>4 games)': (low_win_pct, low_win_pcter),
+            'Longest Win Streak': (win_streak, win_streaker),
+            'Longest Losing Streak': (lose_streak, lose_streaker)}
 
-    g_stats.update({'total games': tot_games,
-                    'games to OT': ot_games,
-                    'highest score': (high_scorer, high_score),
-                    'lowest score': (low_scorer, low_score),
-                    'highest win percentage (>4 games played)': (hi_win_pcter, hi_win_pct),
-                    'lowest win percentage (>4 games played)': (low_win_pcter, low_win_pct),
-                    'longest win streak': (win_streaker, win_streak),
-                    'longest losing streak': (lose_streaker, lose_streak)}, data, upsert=True)
+    g_stats.update({'Total Games': tot_games,
+                    'Games to OT': ot_games,
+                    'Highest Score': (high_score, high_scorer),
+                    'Lowest Score': (low_score, low_scorer),
+                    'Highest Win % (>4 games)': (hi_win_pct, hi_win_pcter),
+                    'Lowest Win % (>4 games)': (low_win_pct, low_win_pcter),
+                    'Longest Win Streak': (win_streak, win_streaker),
+                    'Longest Losing Streak': (lose_streak, lose_streaker)}, data, upsert=True)
 
 
 def update_pl_stats(name):
@@ -165,7 +165,7 @@ def update_pl_stats(name):
         # losses
         losses = games.find({'loser': player['name']}).count()
         # wins / games played
-        winpct = wins / tot_games
+        winpct = float('%.2f' % (wins / tot_games * 100))
         # average score
         # least points scored
         # most points scored
@@ -174,7 +174,7 @@ def update_pl_stats(name):
             scores.append(game['winningScore'])
         for game in games.find({'loser': player['name']}):
             scores.append(game['losingScore'])
-        avg = sum(scores[:]) / tot_games
+        avg = float('%.2f' % (sum(scores[:]) / tot_games))
         least = min(scores)
         most = max(scores)
         # average score of wins
@@ -188,8 +188,8 @@ def update_pl_stats(name):
             avg_scorew = 0
             avg_winby = 0
         else:
-            avg_scorew = sum(scoresw[:]) / wins
-            avg_winby = sum(marginsv[:]) / wins
+            avg_scorew = float('%.2f' % (sum(scoresw[:]) / wins))
+            avg_winby = float('%.2f' % (sum(marginsv[:]) / wins))
         # average score of losses
         # average margin of defeat
         scoresl = []
@@ -201,8 +201,8 @@ def update_pl_stats(name):
             avg_scorel = 0
             avg_loseby = 0
         else:
-            avg_scorel = sum(scoresl[:]) / losses
-            avg_loseby = sum(marginsd[:]) / losses
+            avg_scorel = float('%.2f' % (sum(scoresl[:]) / losses))
+            avg_loseby = float('%.2f' % (sum(marginsd[:]) / losses))
         # number of OT games played, winningScore over 21
         ot = games.find({'$or': [{'winner': player['name']}, {'loser': player['name']}],
                          'winningScore': {'$gt': 21}}).count()
@@ -214,7 +214,7 @@ def update_pl_stats(name):
         if otw == 0:
             ot_pct = 0
         else:
-            ot_pct = otw / ot
+            ot_pct = float('%.2f' % (otw / ot * 100))
         # longest win streak
         wcount = 0
         wstreaks = []
@@ -241,42 +241,42 @@ def update_pl_stats(name):
         loss_streak = max(lstreaks)
 
         data = {'name': player['name'],
-                'total games': tot_games,
-                'total wins': wins,
-                'total losses': losses,
-                'overall win percentage': winpct,
-                'average score': avg,
-                'lowest score': least,
-                'highest score': most,
-                'average margin of victory': avg_winby,
-                'average score of win': avg_scorew,
-                'average margin of defeat': avg_loseby,
-                'average score of loss': avg_scorel,
-                'total games gone to OT': ot,
-                'total OT games won': otw,
-                'total OT games lost': otl,
-                'OT win percentage': ot_pct,
-                'longest win streak': win_streak,
-                'longest losing streak': loss_streak}
+                'Total Games': tot_games,
+                'Total Wins': wins,
+                'Total Losses': losses,
+                'Overall Win %': winpct,
+                'Average Score': avg,
+                'Lowest Score': least,
+                'Highest Score': most,
+                'Average Margin of Victory': avg_winby,
+                'Average Score of Win': avg_scorew,
+                'Average Margin of Defeat': avg_loseby,
+                'Average Score of Loss': avg_scorel,
+                'Total Games to OT': ot,
+                'Total OT Games Won': otw,
+                'Total OT Games Lost': otl,
+                'OT Win %': ot_pct,
+                'Longest Win Streak': win_streak,
+                'Longest Losing Streak': loss_streak}
 
         pl_stats.update({'name': player['name'],
-                         'total games': tot_games,
-                         'total wins': wins,
-                         'total losses': losses,
-                         'overall win percentage': winpct,
-                         'average score': avg,
-                         'lowest score': least,
-                         'highest score': most,
-                         'average margin of victory': avg_winby,
-                         'average score of win': avg_scorew,
-                         'average margin of defeat': avg_loseby,
-                         'average score of loss': avg_scorel,
-                         'total games gone to OT': ot,
-                         'total OT games won': otw,
-                         'total OT games lost': otl,
-                         'OT win percentage': ot_pct,
-                         'longest win streak': win_streak,
-                         'longest losing streak': loss_streak}, data, upsert=True)
+                         'Total Games': tot_games,
+                         'Total Wins': wins,
+                         'Total Losses': losses,
+                         'Overall Win %': winpct,
+                         'Average Score': avg,
+                         'Lowest Score': least,
+                         'Highest Score': most,
+                         'Average Margin of Victory': avg_winby,
+                         'Average Score of Win': avg_scorew,
+                         'Average Margin of Defeat': avg_loseby,
+                         'Average Score of Loss': avg_scorel,
+                         'Total Games to OT': ot,
+                         'Total OT Games Won': otw,
+                         'Total OT Games Lost': otl,
+                         'OT Win %': ot_pct,
+                         'Longest Win Streak': win_streak,
+                         'Longest Losing Streak': loss_streak}, data, upsert=True)
 
 
 def update_vs_stats(player1, player2):
@@ -305,8 +305,8 @@ def update_vs_stats(player1, player2):
                 vs_least = 0
                 vs_most = 0
             else:
-                vs_winpct = vs_wins / vs_games
-                vs_avg = sum(scores[:]) / vs_games
+                vs_winpct = float('%.2f' % (vs_wins / vs_games * 100))
+                vs_avg = float('%.2f' % (sum(scores[:]) / vs_games))
                 vs_least = min(scores)
                 vs_most = max(scores)
             # average score of wins
@@ -320,8 +320,8 @@ def update_vs_stats(player1, player2):
                 vs_avg_scorew = 0
                 vs_avg_winby = 0
             else:
-                vs_avg_scorew = sum(scoresw[:]) / vs_wins
-                vs_avg_winby = sum(marginsv[:]) / vs_wins
+                vs_avg_scorew = float('%.2f' % (sum(scoresw[:]) / vs_wins))
+                vs_avg_winby = float('%.2f' % (sum(marginsv[:]) / vs_wins))
             # average score of losses
             # average margin of defeat
             scoresl = []
@@ -333,8 +333,8 @@ def update_vs_stats(player1, player2):
                 vs_avg_scorel = 0
                 vs_avg_loseby = 0
             else:
-                vs_avg_scorel = sum(scoresl[:]) / vs_losses
-                vs_avg_loseby = sum(marginsd[:]) / vs_losses
+                vs_avg_scorel = float('%.2f' % (sum(scoresl[:]) / vs_losses))
+                vs_avg_loseby = float('%.2f' % (sum(marginsd[:]) / vs_losses))
             # number of OT games played vs player2, winningScore over 21
             vs_ot = games.find({'$or': [{'winner': player['name'], 'loser': player2['name']},
                                         {'loser': player['name'], 'winner': player2['name']}],
@@ -347,7 +347,7 @@ def update_vs_stats(player1, player2):
             if vs_otw == 0:
                 vs_ot_pct = 0
             else:
-                vs_ot_pct = vs_otw / vs_ot
+                vs_ot_pct = float('%.2f' % (vs_otw / vs_ot * 100))
             # longest win streak against player2
             vs_wcount = 0
             vs_wstreaks = [0]
@@ -374,39 +374,41 @@ def update_vs_stats(player1, player2):
             vs_loss_streak = max(vs_lstreaks)
 
             data = {'name': player['name'],
-                    'games against ' + player2['name']: vs_games,
-                    'wins against ' + player2['name']: vs_wins,
-                    'losses against ' + player2['name']: vs_losses,
-                    'win percentage against ' + player2['name']: vs_winpct,
-                    'average score against ' + player2['name']: vs_avg,
-                    'lowest score against ' + player2['name']: vs_least,
-                    'highest score against ' + player2['name']: vs_most,
-                    'average margin of victory against ' + player2['name']: vs_avg_winby,
-                    'average score of win against ' + player2['name']: vs_avg_scorew,
-                    'average margin of defeat against ' + player2['name']: vs_avg_loseby,
-                    'average score of loss against ' + player2['name']: vs_avg_scorel,
-                    'games to OT against ' + player2['name']: vs_ot,
-                    'games won in OT against ' + player2['name']: vs_otw,
-                    'games lost in OT against ' + player2['name']: vs_otl,
-                    'OT win percentage against ' + player2['name']: vs_ot_pct,
-                    'longest win streak against ' + player2['name']: vs_win_streak,
-                    'longest losing streak against ' + player2['name']: vs_loss_streak}
+                    'opponent': player2['name'],
+                    'Games': vs_games,
+                    'Wins': vs_wins,
+                    'Losses': vs_losses,
+                    'Win %': vs_winpct,
+                    'Average Score': vs_avg,
+                    'Lowest Score': vs_least,
+                    'Highest Score': vs_most,
+                    'Average Margin of Victory': vs_avg_winby,
+                    'Average Score of Win': vs_avg_scorew,
+                    'Average Margin of Defeat': vs_avg_loseby,
+                    'Average Score of Loss': vs_avg_scorel,
+                    'Games to OT': vs_ot,
+                    'Games Won in OT': vs_otw,
+                    'Games Lost in OT': vs_otl,
+                    'OT Win %': vs_ot_pct,
+                    'Longest Win Streak': vs_win_streak,
+                    'Longest Losing Streak': vs_loss_streak}
 
             vs_stats.update({'name': player['name'],
-                             'games against ' + player2['name']: vs_games,
-                             'wins against ' + player2['name']: vs_wins,
-                             'losses against ' + player2['name']: vs_losses,
-                             'win percentage against ' + player2['name']: vs_winpct,
-                             'average score against ' + player2['name']: vs_avg,
-                             'lowest score against ' + player2['name']: vs_least,
-                             'highest score against ' + player2['name']: vs_most,
-                             'average margin of victory against ' + player2['name']: vs_avg_winby,
-                             'average score of win against ' + player2['name']: vs_avg_scorew,
-                             'average margin of defeat against ' + player2['name']: vs_avg_loseby,
-                             'average score of loss against ' + player2['name']: vs_avg_scorel,
-                             'games to OT against ' + player2['name']: vs_ot,
-                             'games won in OT against ' + player2['name']: vs_otw,
-                             'games lost in OT against ' + player2['name']: vs_otl,
-                             'OT win percentage against ' + player2['name']: vs_ot_pct,
-                             'longest win streak against ' + player2['name']: vs_win_streak,
-                             'longest losing streak against ' + player2['name']: vs_loss_streak}, data, upsert=True)
+                             'opponent': player2['name'],
+                             'Games': vs_games,
+                             'Wins': vs_wins,
+                             'Losses': vs_losses,
+                             'Win %': vs_winpct,
+                             'Average Score': vs_avg,
+                             'Lowest Score': vs_least,
+                             'Highest Score': vs_most,
+                             'Average Margin of Victory': vs_avg_winby,
+                             'Average Score of Win': vs_avg_scorew,
+                             'Average Margin of Defeat': vs_avg_loseby,
+                             'Average Score of Loss': vs_avg_scorel,
+                             'Games to OT': vs_ot,
+                             'Games Won in OT': vs_otw,
+                             'Games Lost in OT': vs_otl,
+                             'OT Win %': vs_ot_pct,
+                             'Longest Win Streak': vs_win_streak,
+                             'Longest Losing Streak': vs_loss_streak}, data, upsert=True)

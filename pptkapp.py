@@ -21,6 +21,12 @@ class PingPongApp(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.wm_title(self, 'Ping Pong Game Stats Tracker')
         tk.Tk.wm_iconbitmap(self, default='pingpong.ico')
+
+        my_style = ttk.Style()
+        my_style.configure('Treeview', foreground='white', background='black', font=14)
+        my_style.configure('Treeview.Heading', font=16)
+        my_style.configure('TButton', background='black')
+
         container = tk.Frame(self)
         container.pack(side='top', fill='both', expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -196,15 +202,22 @@ class AllGamesPage(tk.Frame):
         self.controller = controller
         label = tk.Label(self, text='All Games List', font=14)
         label.pack(pady=10, padx=10)
+
         self.table = ttk.Treeview(self, columns=('Game ID', 'Winner', 'Winning Score',
                                                  'Loser', 'Losing Score', 'Date Added'))
 
         self.table.heading('#0', text='Game ID')
+        self.table.column('#0', width=75)
         self.table.heading('#1', text='Winner')
+        self.table.column('#1', width=125)
         self.table.heading('#2', text='Winning Score')
+        self.table.column('#2', width=125)
         self.table.heading('#3', text='Loser')
+        self.table.column('#3', width=125)
         self.table.heading('#4', text='Losing Score')
+        self.table.column('#4', width=125)
         self.table.heading('#5', text='Date Added')
+        self.table.column('#5', width=225)
 
         button1 = ttk.Button(self, text='Show Games', command=lambda: self.view_games())
         button1.pack(pady=5)
@@ -399,10 +412,13 @@ class GameStatsPage(tk.Frame):
         self.controller = controller
         label = tk.Label(self, text='Basic Game Stats', font=14)
         label.pack(pady=10, padx=10)
-        self.table = ttk.Treeview(self, columns=('Value', 'Value2'))
+        self.table = ttk.Treeview(self, columns=('Value', 'Player'))
         self.table.heading('#0', text='Stat')
+        self.table.column('#0', width=225)
         self.table.heading('#1', text='Value')
-        self.table.heading('#2', text='Value2')
+        self.table.column('#1', width=75)
+        self.table.heading('#2', text='Player')
+        self.table.column('#2', width=100)
 
         button1 = ttk.Button(self, text='Show Stats', command=lambda: self.view_g_stats())
         button1.pack(pady=5)
@@ -444,7 +460,9 @@ class PlayerStatsPage(tk.Frame):
         label2.pack(pady=5)
         self.table = ttk.Treeview(self, columns='Value')
         self.table.heading('#0', text='Stat')
+        self.table.column('#0', width=225)
         self.table.heading('#1', text='Value')
+        self.table.column('#1', width=80)
 
         button = ttk.Button(self, text='Update Player Names', command=lambda: [self.clear(), self.update_names()])
         button.pack(pady=5)
@@ -478,7 +496,9 @@ class PlayerStatsPage(tk.Frame):
         self.button2.pack(pady=5)
         self.table = ttk.Treeview(self, columns='Value')
         self.table.heading('#0', text='Stat')
+        self.table.column('#0', width=225)
         self.table.heading('#1', text='Value')
+        self.table.column('#1', width=80)
 
     def clear(self):
         self.player.set('Select a Player')
@@ -511,7 +531,9 @@ class VersusStatsPage(tk.Frame):
         label2.pack(pady=5)
         self.table = ttk.Treeview(self, columns='Value')
         self.table.heading('#0', text='Stat')
+        self.table.column('#0', width=235)
         self.table.heading('#1', text='Value')
+        self.table.column('#1', width=70)
 
         button = ttk.Button(self, text='Update Player Names', command=lambda: [self.clear(), self.update_names()])
         button.pack(pady=5)
@@ -552,7 +574,9 @@ class VersusStatsPage(tk.Frame):
         self.button2.pack(pady=5)
         self.table = ttk.Treeview(self, columns='Value')
         self.table.heading('#0', text='Stat')
+        self.table.column('#0', width=235)
         self.table.heading('#1', text='Value')
+        self.table.column('#1', width=70)
 
     def clear(self):
         self.player1.set('Select Player 1')
@@ -562,10 +586,11 @@ class VersusStatsPage(tk.Frame):
     def view_vs_stats(self):
         pingpong.update_vs_stats(self.player1.get(), self.player2.get())
         self.table.delete(*self.table.get_children())
-        for document in pingpong.vs_stats.find({'name': self.player1.get()}):
-            if 'wins against ' + self.player2.get() in document.keys():
+        self.table.heading('#0', text='%s vs %s' % (self.player1.get().upper(), self.player2.get().upper()))
+        for document in pingpong.vs_stats.find({'name': self.player1.get(), 'opponent': self.player2.get()}):
+            if 'Games' in document.keys():
                 for key in document:
-                    if key == 'name' or key == '_id':
+                    if key == 'name' or key == 'opponent' or key == '_id':
                         pass
                     else:
                         try:
