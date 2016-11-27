@@ -3,6 +3,7 @@ from tkinter import filedialog
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+import datetime
 
 
 """ this app allows the user to connect to a mongodb database containing pingpong games and stats.
@@ -25,7 +26,7 @@ class PingPongApp(tk.Tk):
         my_style = ttk.Style()
         my_style.configure('Treeview', foreground='white', background='black', font=14)
         my_style.configure('Treeview.Heading', font=16)
-        my_style.configure('TButton', background='black')
+        my_style.configure('TButton', background='black', width=25)
 
         container = tk.Frame(self)
         container.pack(side='top', fill='both', expand=True)
@@ -205,19 +206,20 @@ class AllGamesPage(tk.Frame):
 
         self.table = ttk.Treeview(self, columns=('Game ID', 'Winner', 'Winning Score',
                                                  'Loser', 'Losing Score', 'Date Added'))
+        self.table['show'] = 'headings'
 
-        self.table.heading('#0', text='Game ID')
-        self.table.column('#0', width=75)
-        self.table.heading('#1', text='Winner')
-        self.table.column('#1', width=125)
-        self.table.heading('#2', text='Winning Score')
+        self.table.heading('#1', text='Game ID')
+        self.table.column('#1', width=75)
+        self.table.heading('#2', text='Winner')
         self.table.column('#2', width=125)
-        self.table.heading('#3', text='Loser')
+        self.table.heading('#3', text='Winning Score')
         self.table.column('#3', width=125)
-        self.table.heading('#4', text='Losing Score')
+        self.table.heading('#4', text='Loser')
         self.table.column('#4', width=125)
-        self.table.heading('#5', text='Date Added')
-        self.table.column('#5', width=225)
+        self.table.heading('#5', text='Losing Score')
+        self.table.column('#5', width=125)
+        self.table.heading('#6', text='Date Added')
+        self.table.column('#6', width=160)
 
         button1 = ttk.Button(self, text='Show Games', command=lambda: self.view_games())
         button1.pack(pady=5)
@@ -226,8 +228,20 @@ class AllGamesPage(tk.Frame):
                                                                             self.clear()])
         button2.pack(pady=5)
 
-        button3 = ttk.Button(self, text='Delete Selected Game', command=lambda: self.delete_game())
+        button3 = ttk.Button(self, text='Delete Selected Game', command=lambda: self.delete_prompt())
         button3.pack(pady=5)
+
+    def delete_prompt(self):
+        if self.table.selection():
+            top_level = Toplevel()
+            label1 = tk.Label(top_level, text='Are You Sure?')
+            label1.pack()
+            button1 = ttk.Button(top_level, text='YES', command=lambda: [self.delete_game(), top_level.destroy()])
+            button1.pack()
+            button2 = ttk.Button(top_level, text='CANCEL', command=lambda: top_level.destroy())
+            button2.pack()
+        else:
+            pass
 
     def delete_game(self):
         selected_item = self.table.selection()
@@ -250,16 +264,17 @@ class AllGamesPage(tk.Frame):
         i = pingpong.games.find().count()
         while i > 0:
             for game in pingpong.games.find({'game_id': i}):
+                match = re.search(r'(.+\s\d\d:\d\d:\d\d)', str(game['dateAdded']))
                 try:
                     self.table.insert('', 'end', game['game_id'], text=game['game_id'],
-                                      values=(game['winner'], game['winningScore'],
+                                      values=(game['game_id'], game['winner'], game['winningScore'],
                                               game['loser'], game['losingScore'],
-                                              game['dateAdded']))
+                                              match.group(1)))
                 except:
                     self.table.item(game['game_id'], text=game['game_id'],
-                                    values=(game['winner'], game['winningScore'],
+                                    values=(game['game_id'], game['winner'], game['winningScore'],
                                             game['loser'], game['losingScore'],
-                                            game['dateAdded']))
+                                            match.group(1)))
                 finally:
                     i -= 1
         self.table.pack(pady=5)
@@ -581,6 +596,8 @@ class VersusStatsPage(tk.Frame):
     def clear(self):
         self.player1.set('Select Player 1')
         self.player2.set('Select Player 2')
+        self.table.heading('#0', text='Stat')
+        self.table.column('#0', width=235)
         self.table.delete(*self.table.get_children())
 
     def view_vs_stats(self):
